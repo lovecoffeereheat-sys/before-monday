@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Before Monday — Gilt & Grace</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --slate:#1e2433;
+  --steel:#3d4a5c;
+  --gold:#c4a45a;
+  --gold-pale:#f5ead8;
+  --gold-faint:#faf3e8;
+  --sand:#e8d5c4;
+  --sand-light:#f5ede4;
+  --warm-white:#faf6f2;
+  --ink:#1e2433;
+  --muted:#5a4a3a;
+  --faint:#9a8878;
+  --border:#e0cfc0;
+  --white:#fff;
+  --success:#3b6d40;
+  --error:#8b3a3a;
+}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{background:var(--warm-white);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh}
+
+/* ── GATE ── */
+.gate{position:fixed;inset:0;background:var(--slate);z-index:300;display:flex;align-items:center;justify-content:center;padding:2rem}
+.gate.hidden{display:none}
+.gate-box{background:rgba(255,255,255,.06);border:1px solid rgba(196,164,90,.2);border-radius:12px;padding:2.5rem 2rem;max-width:420px;width:100%;text-align:center}
+.gate-eyebrow{font-family:'DM Sans',sans-serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.6rem;display:block;font-weight:500}
+.gate-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#fff;margin-bottom:.35rem;font-weight:400}
+.gate-title em{color:var(--gold);font-style:italic}
+.gate-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.88rem;color:rgba(196,164,90,.5);margin-bottom:1.75rem;line-height:1.65}
+.gate-field{margin-bottom:1rem;text-align:left}
+.gate-field label{display:block;font-size:.6rem;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.gate-field input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(196,164,90,.2);border-radius:5px;padding:.7rem 1rem;font-family:'DM Sans',sans-serif;font-weight:300;font-size:.88rem;color:#fff;outline:none;transition:border-color .2s}
+.gate-field input:focus{border-color:rgba(196,164,90,.5)}
+.gate-field input::placeholder{color:rgba(196,164,90,.3)}
+.gate-hint{font-size:.62rem;color:rgba(196,164,90,.35);margin-top:.3rem;font-style:italic;font-family:'Cormorant Garamond',serif}
+.gate-btn{width:100%;background:var(--gold);color:var(--slate);border:none;border-radius:5px;padding:.85rem 2rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;cursor:pointer;margin-top:.75rem;transition:background .2s;font-weight:500}
+.gate-btn:hover{background:#b8944e}
+.gate-note{font-size:.6rem;color:rgba(196,164,90,.28);margin-top:.85rem;line-height:1.65;font-family:'Cormorant Garamond',serif;font-style:italic}
+.gate-err{font-size:.72rem;color:#e8a0a0;margin-top:.5rem;font-style:italic;display:none}
+
+/* ── SETUP ── */
+.setup{position:fixed;inset:0;background:var(--slate);z-index:200;display:flex;align-items:center;justify-content:center;padding:2rem}
+.setup.hidden{display:none}
+.setup-box{background:rgba(255,255,255,.06);border:1px solid rgba(196,164,90,.2);border-radius:12px;padding:2.5rem 2rem;max-width:420px;width:100%}
+.setup-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#fff;margin-bottom:.3rem;font-weight:400}
+.setup-title em{color:var(--gold);font-style:italic}
+.setup-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.82rem;color:rgba(196,164,90,.45);margin-bottom:1.5rem;line-height:1.6}
+.setup-field{margin-bottom:1.1rem}
+.setup-field label{display:block;font-size:.6rem;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.setup-field input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(196,164,90,.2);border-radius:5px;padding:.65rem 1rem;font-family:'DM Sans',sans-serif;font-weight:300;font-size:.88rem;color:#fff;outline:none;transition:border-color .2s}
+.setup-field input:focus{border-color:rgba(196,164,90,.5)}
+.setup-field input::placeholder{color:rgba(196,164,90,.3)}
+.setup-btn{width:100%;background:var(--gold);color:var(--slate);border:none;border-radius:5px;padding:.8rem 2rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;cursor:pointer;margin-top:1.25rem;transition:background .2s;font-weight:500}
+.setup-btn:hover{background:#b8944e}
+
+/* ── LOADING ── */
+.loading{position:fixed;inset:0;background:rgba(30,36,51,.85);z-index:100;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.loading.show{display:flex}
+.loading-icon{font-size:2rem;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.92)}50%{opacity:1;transform:scale(1.05)}}
+.loading-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(232,213,196,.65)}
+
+/* ── HERO ── */
+.hero{background:var(--slate);padding:2.5rem 2rem 2rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -20%,rgba(196,164,90,.12) 0%,transparent 65%);pointer-events:none}
+.hero-eyebrow{font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem;font-weight:500;display:block;opacity:.8}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.65rem,4vw,2.25rem);font-weight:400;color:#fff;line-height:1.12;margin-bottom:.4rem}
+.hero h1 em{color:var(--gold);font-style:italic}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem;color:rgba(232,213,196,.45);max-width:360px;margin:0 auto}
+
+/* ── PROGRESS ── */
+.progress{background:rgba(196,164,90,.06);border-bottom:1px solid rgba(196,164,90,.08);padding:.65rem 2rem;display:flex;justify-content:center;gap:0;align-items:center}
+.ps{display:flex;align-items:center;gap:.4rem;padding:.28rem .75rem;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(196,164,90,.28);transition:color .3s;font-weight:500}
+.ps.active{color:var(--gold)}
+.ps.done{color:rgba(196,164,90,.45)}
+.pdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.pline{width:20px;height:.5px;background:rgba(196,164,90,.12);flex-shrink:0}
+
+/* ── MAIN ── */
+.main{max-width:620px;margin:0 auto;padding:2.25rem 1.5rem 5rem}
+
+/* ── STEPS ── */
+.step{display:none}
+.step.active{display:block;animation:fadeUp .22s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.step-eyebrow{font-size:.58rem;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem;display:block;font-weight:500}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--ink);margin-bottom:.35rem;font-weight:400;line-height:1.25}
+.step-title em{font-style:italic;color:var(--steel)}
+.step-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem;color:var(--faint);line-height:1.65;margin-bottom:1.5rem}
+
+/* ── FORM ── */
+.field{margin-bottom:1.1rem}
+.field-label{font-size:.58rem;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:.4rem;font-weight:500}
+.field-hint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.75rem;color:var(--faint);margin-top:.3rem;line-height:1.5}
+.field input,.field textarea{width:100%;background:var(--white);border:1px solid var(--border);border-radius:5px;padding:.65rem .9rem;font-family:'DM Sans',sans-serif;font-weight:300;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s}
+.field input:focus,.field textarea:focus{border-color:var(--gold)}
+.field input::placeholder,.field textarea::placeholder{color:var(--faint);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem}
+.field textarea{min-height:100px;resize:vertical;line-height:1.7}
+.field input[type="number"]{max-width:120px}
+
+/* ── ENERGY PILLS ── */
+.pill-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
+.pill{padding:.4rem 1rem;border-radius:999px;border:1px solid var(--border);background:var(--white);color:var(--muted);font-size:.75rem;font-family:'DM Sans',sans-serif;font-weight:300;cursor:pointer;transition:all .15s}
+.pill:hover{border-color:var(--gold);color:var(--ink)}
+.pill.on{background:var(--gold-faint);border-color:var(--gold);color:var(--steel);font-weight:500}
+
+/* ── DIVIDER ── */
+.div{height:.5px;background:linear-gradient(to right,transparent,var(--border),transparent);margin:1.5rem 0}
+
+/* ── BUTTONS ── */
+.btn-primary{width:100%;background:var(--slate);color:var(--sand-light);border:none;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;padding:.9rem 2rem;cursor:pointer;border-radius:5px;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem}
+.btn-primary:hover{background:var(--steel)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:300;font-size:.72rem;letter-spacing:.06em;padding:.5rem 1.1rem;cursor:pointer;border-radius:4px;transition:all .15s}
+.btn-secondary:hover{border-color:var(--gold);color:var(--ink)}
+.actions-row{display:flex;gap:.6rem;align-items:center;margin-top:1rem;flex-wrap:wrap}
+
+/* ── OUTPUT CARDS ── */
+.out-grid{display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem}
+.out-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.4rem}
+.out-card-label{font-size:.55rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:.65rem;display:flex;align-items:center;gap:.5rem}
+.out-card-label::after{content:'';flex:1;height:.5px;background:var(--border)}
+.out-card-body{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--ink);line-height:1.8;outline:none}
+.out-card-body:focus{outline:none}
+.out-card.signal{background:var(--gold-faint);border-color:var(--sand)}
+.out-card.signal .out-card-label{color:var(--steel)}
+.out-card.signal .out-card-body{font-style:italic;color:var(--steel)}
+.out-list{list-style:none;padding:0;margin:0}
+.out-list li{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--ink);line-height:1.7;padding:.2rem 0 .2rem 1rem;position:relative}
+.out-list li::before{content:'—';position:absolute;left:0;color:var(--gold)}
+
+/* ── COPY ALL ── */
+.copy-btn{flex:1;background:var(--slate);color:var(--sand-light);border:none;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.88rem;padding:.65rem 1.25rem;border-radius:4px;cursor:pointer;transition:background .2s}
+.copy-btn:hover{background:var(--steel)}
+.copy-btn.done{background:var(--success)}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.7rem;padding:.55rem 1rem;border-radius:4px;cursor:pointer;transition:all .15s}
+.reset-btn:hover{border-color:var(--gold);color:var(--ink)}
+.settings-link{font-size:.65rem;color:var(--faint);text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-left:auto}
+.settings-link:hover{color:var(--muted)}
+.out-actions{display:flex;gap:.5rem;margin-top:.75rem;align-items:center}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--slate);color:var(--sand-light);font-size:.72rem;letter-spacing:.04em;padding:.55rem 1.35rem;border-radius:4px;opacity:0;transition:all .28s;pointer-events:none;z-index:400;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--success)}
+.toast.err{background:var(--error)}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:1.5rem 2rem;font-size:.6rem;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;font-weight:500}
+.footer a{color:var(--faint);text-decoration:none}
+.footer a:hover{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <span class="gate-eyebrow">Gilt & Grace</span>
+    <h2 class="gate-title">Before <em>Monday</em></h2>
+    <p class="gate-sub">Enter your license key to get started. It stays in your browser — nothing is stored elsewhere.</p>
+    <div class="gate-field">
+      <label>License key</label>
+      <input type="text" id="gateKey" placeholder="GG-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false"/>
+      <p class="gate-hint">From your Payhip purchase receipt.</p>
+    </div>
+    <p class="gate-err" id="gateErr">That key doesn't look right — check your receipt and try again.</p>
+    <button class="gate-btn" onclick="submitKey()">unlock →</button>
+    <p class="gate-note">Need help? hey@gracesarah.ca</p>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div class="setup hidden" id="setup">
+  <div class="setup-box">
+    <h2 class="setup-title">One quick <em>thing</em></h2>
+    <p class="setup-sub">What should we call you? You can change this anytime.</p>
+    <div class="setup-field">
+      <label>Your name</label>
+      <input type="text" id="setupName" placeholder="How you think of yourself — e.g. Sarah"/>
+    </div>
+    <button class="setup-btn" onclick="saveSetup()">let's go →</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+  <span class="loading-icon">☕</span>
+  <p class="loading-text">reading the week...</p>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-eyebrow">Gilt & Grace</span>
+  <h1>Before <em>Monday</em></h1>
+  <p class="hero-sub">five questions. a clear picture of your week.</p>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress">
+  <div class="ps active" id="p1"><span class="pdot"></span>your week</div>
+  <div class="pline"></div>
+  <div class="ps" id="p2"><span class="pdot"></span>the briefing</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <span class="step-eyebrow">step one</span>
+    <h2 class="step-title">Tell me about <em>this week</em></h2>
+    <p class="step-sub">Answer what's true. Five questions — two minutes. Nothing gets stored anywhere.</p>
+
+    <div class="field">
+      <label class="field-label">How many client sessions this week?</label>
+      <input type="number" id="sessionCount" min="0" max="40" placeholder="0" value=""/>
+    </div>
+
+    <div class="field">
+      <label class="field-label">What didn't get done last week that's following you in?</label>
+      <textarea id="carryOver" rows="3" placeholder="What's trailing in from last week — the unfinished thing, the email you still haven't sent, the task that keeps moving to tomorrow."></textarea>
+    </div>
+
+    <div class="field">
+      <label class="field-label">What's on your plate this week — work or personal?</label>
+      <textarea id="onPlate" rows="4" placeholder="Everything that needs your attention this week, sessions aside. Include personal if it's shaping the week — a appointment, a difficult conversation, something at home. It all counts."></textarea>
+    </div>
+
+    <div class="field">
+      <label class="field-label">What are you avoiding right now? <span style="font-weight:300;font-style:italic;color:var(--faint);text-transform:none;letter-spacing:0;font-size:.78rem;">(optional — but honest)</span></label>
+      <textarea id="avoiding" rows="2" placeholder="The thing you keep moving down the list. The conversation you're not quite ready for. The decision sitting in your peripheral vision."></textarea>
+    </div>
+
+    <div class="field">
+      <label class="field-label">How are you going into this week?</label>
+      <div class="pill-row" id="energyPills">
+        <button class="pill on" data-val="steady" onclick="selectPill('energyPills',this)">steady</button>
+        <button class="pill" data-val="managing" onclick="selectPill('energyPills',this)">managing</button>
+        <button class="pill" data-val="low" onclick="selectPill('energyPills',this)">low</button>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <button class="btn-primary" id="briefBtn" onclick="generateBriefing()">get my briefing →</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <span class="step-eyebrow">your briefing</span>
+    <h2 class="step-title">Here's <em>this week.</em></h2>
+    <p class="step-sub">Read it. Edit anything directly. Copy what you need.</p>
+
+    <div class="out-grid">
+
+      <div class="out-card">
+        <div class="out-card-label">this week at a glance</div>
+        <div class="out-card-body" id="outGlance" contenteditable="true" spellcheck="false"></div>
+      </div>
+
+      <div class="out-card">
+        <div class="out-card-label">what to protect</div>
+        <ul class="out-list" id="outProtect"></ul>
+      </div>
+
+      <div class="out-card">
+        <div class="out-card-label">what to let go of this week</div>
+        <ul class="out-list" id="outLetgo"></ul>
+      </div>
+
+      <div class="out-card signal">
+        <div class="out-card-label">what the week is telling you</div>
+        <div class="out-card-body" id="outSignal" contenteditable="true" spellcheck="false"></div>
+      </div>
+
+    </div>
+
+    <div class="out-actions">
+      <button class="copy-btn" id="copyBtn" onclick="copyAll()">copy briefing</button>
+      <button class="reset-btn" onclick="startOver()">brief another week →</button>
+      <span class="settings-link" onclick="openSettings()">settings</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <a href="https://giltandgrace.co" target="_blank">Gilt & Grace</a> &nbsp;·&nbsp; hey@gracesarah.ca
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STORAGE ──────────────────────────────────────────────────────────
+const K = {
+  KEY: 'bm_license_key',
+  NAME: 'bm_practitioner_name'
+};
+const get = k => localStorage.getItem(k) || '';
+const set = (k,v) => localStorage.setItem(k,v);
+
+// ── INIT ─────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const key = get(K.KEY);
+  if (!key) { show('gate'); return; }
+
+  const name = get(K.NAME);
+  if (!name) { show('setup'); hide('gate'); return; }
+
+  hide('gate');
+  hide('setup');
+  showStep(1);
+});
+
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach((s,i) => {
+    s.classList.toggle('active', i+1 === n);
+  });
+  ['p1','p2'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.classList.toggle('active', i+1 === n);
+    el.classList.toggle('done', i+1 < n);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── GATE ─────────────────────────────────────────────────────────────
+function submitKey() {
+  const val = document.getElementById('gateKey').value.trim();
+  const err = document.getElementById('gateErr');
+
+  if (!val || val.length < 8) {
+    err.style.display = 'block';
+    return;
+  }
+
+  err.style.display = 'none';
+  set(K.KEY, val);
+  hide('gate');
+
+  const name = get(K.NAME);
+  if (!name) { show('setup'); return; }
+  showStep(1);
+}
+
+document.getElementById('gateKey').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitKey();
+});
+
+// ── SETUP ─────────────────────────────────────────────────────────────
+function saveSetup() {
+  const name = document.getElementById('setupName').value.trim();
+  if (!name) {
+    toast('add your name first', 'err');
+    return;
+  }
+  set(K.NAME, name);
+  hide('setup');
+  showStep(1);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const setupNameEl = document.getElementById('setupName');
+  if (setupNameEl) {
+    setupNameEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveSetup();
+    });
+  }
+});
+
+// ── PILLS ─────────────────────────────────────────────────────────────
+function selectPill(groupId, btn) {
+  document.querySelectorAll('#' + groupId + ' .pill').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function getPill(groupId) {
+  const on = document.querySelector('#' + groupId + ' .pill.on');
+  return on ? on.dataset.val : '';
+}
+
+// ── GENERATE ─────────────────────────────────────────────────────────
+async function generateBriefing() {
+  const onPlate = document.getElementById('onPlate').value.trim();
+  if (!onPlate) {
+    toast('tell me what\'s on your plate first', 'err');
+    return;
+  }
+
+  const btn = document.getElementById('briefBtn');
+  btn.disabled = true;
+  btn.textContent = 'reading the week...';
+
+  document.getElementById('loading').classList.add('show');
+
+  const payload = {
+    practitionerName: get(K.NAME),
+    sessionCount: document.getElementById('sessionCount').value || '0',
+    carryOver: document.getElementById('carryOver').value.trim(),
+    onPlate: onPlate,
+    avoiding: document.getElementById('avoiding').value.trim(),
+    energy: getPill('energyPills')
+  };
+
+  try {
+    const res = await fetch('/.netlify/functions/briefing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Something went wrong');
+    }
+
+    const data = await res.json();
+    renderBriefing(data);
+    showStep(2);
+
+  } catch(e) {
+    toast('something went sideways — ' + e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'get my briefing →';
+  } finally {
+    document.getElementById('loading').classList.remove('show');
+    btn.disabled = false;
+    btn.textContent = 'get my briefing →';
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function renderBriefing(data) {
+  document.getElementById('outGlance').textContent = data.glance || '';
+
+  const protect = document.getElementById('outProtect');
+  protect.innerHTML = '';
+  (data.protect || []).forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    li.contentEditable = 'true';
+    protect.appendChild(li);
+  });
+
+  const letgo = document.getElementById('outLetgo');
+  letgo.innerHTML = '';
+  (data.letgo || []).forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    li.contentEditable = 'true';
+    letgo.appendChild(li);
+  });
+
+  document.getElementById('outSignal').textContent = data.signal || '';
+}
+
+// ── COPY ALL ─────────────────────────────────────────────────────────
+function copyAll() {
+  const glance = document.getElementById('outGlance').innerText || '';
+
+  const protectItems = Array.from(document.querySelectorAll('#outProtect li'))
+    .map(li => '— ' + (li.innerText || li.textContent).trim())
+    .join('\n');
+
+  const letgoItems = Array.from(document.querySelectorAll('#outLetgo li'))
+    .map(li => '— ' + (li.innerText || li.textContent).trim())
+    .join('\n');
+
+  const signal = document.getElementById('outSignal').innerText || '';
+
+  const full = [
+    'BEFORE MONDAY — WEEKLY BRIEFING',
+    '',
+    'THIS WEEK AT A GLANCE',
+    glance,
+    '',
+    'WHAT TO PROTECT',
+    protectItems,
+    '',
+    'WHAT TO LET GO OF THIS WEEK',
+    letgoItems,
+    '',
+    'WHAT THE WEEK IS TELLING YOU',
+    signal
+  ].join('\n');
+
+  navigator.clipboard.writeText(full).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'copied ✓';
+    btn.classList.add('done');
+    setTimeout(() => {
+      btn.textContent = 'copy briefing';
+      btn.classList.remove('done');
+    }, 2500);
+  }).catch(() => toast('copy failed — select and copy manually', 'err'));
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────────────
+function openSettings() {
+  const name = get(K.NAME);
+  const newName = prompt('Your name:', name);
+  if (newName && newName.trim()) {
+    set(K.NAME, newName.trim());
+    toast('saved', 'ok');
+  }
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────
+function startOver() {
+  document.getElementById('sessionCount').value = '';
+  document.getElementById('carryOver').value = '';
+  document.getElementById('onPlate').value = '';
+  document.getElementById('avoiding').value = '';
+  selectPill('energyPills', document.querySelector('#energyPills .pill[data-val="steady"]'));
+  document.getElementById('outGlance').textContent = '';
+  document.getElementById('outProtect').innerHTML = '';
+  document.getElementById('outLetgo').innerHTML = '';
+  document.getElementById('outSignal').textContent = '';
+  showStep(1);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+</script>
+</body>
+</html>
