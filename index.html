@@ -167,23 +167,6 @@ body{background:var(--warm-white);color:var(--ink);font-family:'DM Sans',sans-se
 </head>
 <body>
 
-<!-- GATE -->
-<div class="gate" id="gate">
-  <div class="gate-box">
-    <span class="gate-eyebrow">Reheated, Obviously</span>
-    <h2 class="gate-title">Before <em>Monday</em></h2>
-    <p class="gate-sub">Enter your license key to get started. It stays in your browser — nothing is stored elsewhere.</p>
-    <div class="gate-field">
-      <label>License key</label>
-      <input type="text" id="gateKey" placeholder="GG-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false"/>
-      <p class="gate-hint">From your Payhip purchase receipt.</p>
-    </div>
-    <p class="gate-err" id="gateErr">That key doesn't look right — check your receipt and try again.</p>
-    <button class="gate-btn" onclick="submitKey()">unlock →</button>
-    <p class="gate-note">Need help? hey@gracesarah.ca</p>
-  </div>
-</div>
-
 <!-- SETUP -->
 <div class="setup hidden" id="setup">
   <div class="setup-box">
@@ -315,11 +298,9 @@ const get=k=>localStorage.getItem(k)||'';
 const set=(k,v)=>localStorage.setItem(k,v);
 
 window.addEventListener('DOMContentLoaded',()=>{
-  const key=get(K.KEY);
-  if(!key){show('gate');return;}
   const name=get(K.NAME);
-  if(!name){show('setup');hide('gate');return;}
-  hide('gate');hide('setup');showStep(1);
+  if(!name){show('setup');return;}
+  hide('setup');showStep(1);
 });
 
 function show(id){document.getElementById(id).classList.remove('hidden');}
@@ -334,20 +315,6 @@ function showStep(n){
   });
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
-function submitKey(){
-  const val=document.getElementById('gateKey').value.trim();
-  const err=document.getElementById('gateErr');
-  if(!val||val.length<8){err.style.display='block';return;}
-  err.style.display='none';
-  set(K.KEY,val);
-  hide('gate');
-  const name=get(K.NAME);
-  if(!name){show('setup');return;}
-  showStep(1);
-}
-
-document.getElementById('gateKey').addEventListener('keydown',e=>{if(e.key==='Enter')submitKey();});
 
 function saveSetup(){
   const name=document.getElementById('setupName').value.trim();
